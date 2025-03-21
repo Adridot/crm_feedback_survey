@@ -9,7 +9,12 @@ class SurveyUserInput(models.Model):
         string="Lead associé",
         help="Fiche CRM à laquelle cette participation est liée."
     )
-    
+
+    partner_ids = fields.Many2many(
+        'res.partner', 
+        string='Destinataires'
+    )
+
     def open_survey_response(self):
         """Méthode pour ouvrir directement le formulaire de réponse"""
         self.ensure_one()
@@ -21,3 +26,4 @@ class SurveyUserInput(models.Model):
             'res_id': self.id,
             'target': 'current',
         }
+    

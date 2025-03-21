@@ -15,14 +15,25 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
+            <!-- Ajout d'un smart button dans le header -->
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <field name="show_survey_button" invisible="1"/>
+                <button name="action_view_survey_user_inputs" type="object" class="oe_stat_button" icon="fa-bar-chart" attrs="{'invisible': [('show_survey_button', '=', False)]}">
+                    <field name="survey_user_input_count" widget="statinfo" string="Sondages"/>
+                </button>
+            </xpath>
             <!-- Ajout d'un nouvel onglet dans le notebook -->
             <xpath expr="//notebook" position="inside">
                 <page string="Formulaires">
                     <group>
-                        <field name="survey_id"/>
-                        <button name="action_send_survey_link" type="object"
-                                string="Envoyer le formulaire"
-                                class="oe_highlight"/>
+                        <group>
+                            <field name="survey_id"/>
+                        </group>
+                        <group>
+                            <button name="action_send_survey_link" type="object"
+                                    string="Envoyer le formulaire"
+                                    class="oe_highlight text-nowrap"/>
+                        </group>
                     </group>
                     <!-- Vue liste des participations liées -->
                     <field name="survey_user_input_ids" nolabel="1">
