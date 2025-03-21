@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action pour ouvrir la vue formulaire standard de survey.user_input -->
+    <record id="action_view_survey_user_input" model="ir.actions.act_window">
+        <field name="name">Voir Participation</field>
+        <field name="res_model">survey.user_input</field>
+        <field name="view_mode">form</field>
+        <!-- Utilise la vue standard au lieu d'une vue personnalisée -->
+        <field name="target">current</field>
+    </record>
+
+    <!-- Inheritance de la vue formulaire de crm.lead pour ajouter l'onglet "Formulaires du CRM" -->
+    <record id="view_crm_lead_form_inherit_feedback" model="ir.ui.view">
+        <field name="name">crm.lead.form.feedback</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajout d'un nouvel onglet dans le notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Formulaires">
+                    <group>
+                        <field name="survey_id"/>
+                        <button name="action_send_survey_link" type="object"
+                                string="Envoyer le formulaire"
+                                class="oe_highlight"/>
+                    </group>
+                    <!-- Vue liste des participations liées -->
+                    <field name="survey_user_input_ids" nolabel="1">
+                        <tree string="Participations" decoration-muted="state=='done'">
+                            <!-- Affichage compact : date de création et état -->
+                            <field name="create_date"/>
+                            <field name="state" widget="badge" 
+                                   decoration-success="state=='done'" 
+                                   decoration-info="state=='in_progress'" 
+                                   decoration-warning="state=='new'"/>
+                            <!-- Bouton pour accéder à la vue détaillée personnalisée -->
+                            <button name="%(action_view_survey_user_input)d" type="action"
+                                    string="Voir détails" class="oe_highlight"/>
+                            <!-- Bouton pour accéder à la vue standard -->
+                            <button name="%(survey.action_survey_user_input)d" type="action"
+                                    string="Vue standard" icon="fa-external-link"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

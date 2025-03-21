@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hériter de la vue formulaire des participations au sondage pour ajouter le champ x_lead_id -->
+    <record id="survey_user_input_view_form_inherit_crm" model="ir.ui.view">
+        <field name="name">survey.user_input.form.inherit.crm</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="x_lead_id" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
