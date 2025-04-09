@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Action pour ouvrir la vue formulaire standard de survey.user_input -->
+    <!-- Action pour ouvrir la vue formulaire standard de survey.user_input (si nécessaire) -->
     <record id="action_view_survey_user_input" model="ir.actions.act_window">
         <field name="name">Voir Participation</field>
         <field name="res_model">survey.user_input</field>
         <field name="view_mode">form</field>
-        <!-- Utilise la vue standard au lieu d'une vue personnalisée -->
+        <!-- target="current" pour ouvrir dans la même fenêtre (sans pop-up) -->
         <field name="target">current</field>
     </record>
 
-    <!-- Inheritance de la vue formulaire de crm.lead pour ajouter l'onglet "Formulaires du CRM" -->
+    <!-- Héritage de la vue formulaire CRM Lead -->
     <record id="view_crm_lead_form_inherit_feedback" model="ir.ui.view">
         <field name="name">crm.lead.form.feedback</field>
         <field name="model">crm.lead</field>
-        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="inherit_id" ref="crm.crm_lead_view_form" />
         <field name="arch" type="xml">
-            <!-- Ajout d'un smart button dans le header -->
-            <xpath expr="//div[@class='oe_button_box']" position="inside">
-                <field name="show_survey_button" invisible="1"/>
-                <button name="action_view_survey_user_inputs" type="object" class="oe_stat_button" icon="fa-bar-chart" attrs="{'invisible': [('show_survey_button', '=', False)]}">
-                    <field name="survey_user_input_count" widget="statinfo" string="Sondages"/>
-                </button>
-            </xpath>
-            <!-- Ajout d'un nouvel onglet dans le notebook -->
+            <!-- Insertion d'un nouvel onglet "Formulaires" -->
             <xpath expr="//notebook" position="inside">
                 <page string="Formulaires">
                     <group>
@@ -30,27 +23,53 @@
                             <field name="survey_id"/>
                         </group>
                         <group>
-                            <button name="action_send_survey_link" type="object"
+                            <button name="action_send_survey_link"
+                                    type="object"
                                     string="Envoyer le formulaire"
                                     class="oe_highlight text-nowrap"/>
                         </group>
                     </group>
-                    <!-- Vue liste des participations liées -->
-                    <field name="survey_user_input_ids" nolabel="1">
-                        <tree string="Participations" decoration-muted="state=='done'">
-                            <!-- Affichage compact : date de création et état -->
+
+                    <!-- On affiche survey_user_input_ids en mode "tree,form" -->
+                    <field name="survey_user_input_ids"
+                           widget="one2many_list"
+                           mode="tree,form"
+                           nolabel="1">
+                        
+                        <!-- 1) Vue Tree des participations (haut de l'écran) -->
+                        <tree string="Participations" decoration-muted="state == 'done'">
                             <field name="create_date"/>
-                            <field name="state" widget="badge" 
-                                   decoration-success="state=='done'" 
-                                   decoration-info="state=='in_progress'" 
-                                   decoration-warning="state=='new'"/>
-                            <!-- Bouton pour accéder à la vue détaillée personnalisée -->
-                            <button name="%(action_view_survey_user_input)d" type="action"
-                                    string="Voir détails" class="oe_highlight"/>
-                            <!-- Bouton pour accéder à la vue standard -->
-                            <button name="%(survey.action_survey_user_input)d" type="action"
-                                    string="Vue standard" icon="fa-external-link"/>
+                            <field name="state" widget="badge"
+                                decoration-success="state=='done'"
+                                decoration-info="state=='in_progress'"
+                                decoration-warning="state=='new'"/>
+                            <field name="aggregated_response" 
+                                   widget="html"/>
+                            <button name="open_survey_response"
+                                    type="object"
+                                    string="Voir formulaire complet"
+                                    class="oe_highlight"/>
                         </tree>
+
+                        <!-- 2) Vue Form de chaque participation (en bas, ou à droite selon la taille d'écran) -->
+                        <form string="Détails de la participation">
+                            <sheet>
+                                <!-- Sous-liste des réponses (user_input_line_ids) -->
+                                <field name="user_input_line_ids"
+                                        widget="one2many_list"
+                                        mode="tree"
+                                        nolabel="1"
+                                        style="pointer-events:none;">
+                                    <tree string="Réponses" decoration-muted="skipped == True">
+                                        <field name="question_sequence" invisible="1"/>
+                                        <field name="create_date" optional="hidden"/>
+                                        <field name="skipped" invisible="1"/>
+                                        <field name="question_id"/>
+                                        <field name="full_answer" string="Answer"/>
+                                    </tree>
+                                </field>
+                            </sheet>
+                        </form>
                     </field>
                 </page>
             </xpath>

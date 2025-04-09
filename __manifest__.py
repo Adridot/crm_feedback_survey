@@ -12,6 +12,11 @@
         'views/res_config_settings_views.xml',
         'views/survey_user_input_views.xml'
     ],
+    'assets': {
+        'web.assets_backend': [
+            'crm_feedback_survey/static/src/css/disable_click.css',
+        ],
+    },
     'installable': True,
     'application': False,
 }

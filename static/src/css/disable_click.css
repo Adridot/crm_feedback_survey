@@ -1,0 +1,4 @@
+td[name="aggregated_response"] {
+    pointer-events: none; /* Désactive les événements de clic */
+    cursor: default; /* Change le curseur pour indiquer que c'est désactivé */
+}
